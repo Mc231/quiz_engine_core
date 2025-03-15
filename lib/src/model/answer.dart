@@ -1,4 +1,4 @@
-import 'package:quiz_engine_core/model/question.dart';
+import 'package:quiz_engine_core/src/model/question.dart';
 
 /// Represents an answer to a quiz question.
 ///

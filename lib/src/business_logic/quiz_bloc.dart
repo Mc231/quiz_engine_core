@@ -1,4 +1,5 @@
-import 'package:quiz_engine_core/business_logic/quiz_state/quiz_state.dart';
+import 'package:quiz_engine_core/src/business_logic/quiz_state/quiz_state.dart';
+
 import '../bloc/single_subscription_bloc.dart';
 import '../model/answer.dart';
 import '../model/question.dart';

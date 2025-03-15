@@ -1,4 +1,4 @@
-import 'package:quiz_engine_core/model/random_pick_result.dart';
+import 'package:quiz_engine_core/src/model/random_pick_result.dart';
 
 /// Represents a question with an answer and multiple options.
 ///

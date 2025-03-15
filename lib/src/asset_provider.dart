@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:quiz_engine_core/resource_provider.dart';
+import 'package:quiz_engine_core/src/resource_provider.dart';
 
 /// A provider for loading assets from an asset bundle.
 ///
