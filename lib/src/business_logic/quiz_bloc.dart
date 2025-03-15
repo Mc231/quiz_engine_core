@@ -31,6 +31,7 @@ class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
   List<T> _items = [];
 
   /// The current progress indicating how many questions have been answered.
+  ///
   int _currentProgress = 0;
 
   /// The total number of questions in the game.
