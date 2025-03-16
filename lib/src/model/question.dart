@@ -34,6 +34,6 @@ class Question {
   ///
   /// [result] is the `RandomPickResult` containing the answer and options
   /// for the question.
-  Question.fromRandomResult(RandomPickResult<QuestionEntry> result)
+  Question.fromRandomResult(RandomPickResult result)
       : this(result.answer, result.options);
 }

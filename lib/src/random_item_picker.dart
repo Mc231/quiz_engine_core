@@ -59,7 +59,7 @@ class RandomItemPicker {
   ///
   /// Returns a `RandomPickResult` containing the answer and options, or `null`
   /// if there are no items available for picking.
-  RandomPickResult<QuestionEntry>? pick() {
+  RandomPickResult? pick() {
     if (items.isEmpty) {
       return null;
     }
@@ -92,7 +92,7 @@ class RandomItemPicker {
   ///
   /// [answer] is the correct answer among the options.
   /// [options] is the list of options presented, including the answer.
-  RandomPickResult<QuestionEntry> _createResult(QuestionEntry answer, List<QuestionEntry> options) {
+  RandomPickResult _createResult(QuestionEntry answer, List<QuestionEntry> options) {
     items.remove(answer);
     _answeredItems.add(answer);
     return RandomPickResult(answer, options);

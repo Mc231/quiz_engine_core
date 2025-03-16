@@ -1,3 +1,5 @@
+import 'package:quiz_engine_core/quiz_engine_core.dart';
+
 /// Represents the answer and options generated from a random question.
 ///
 /// The `RandomPickResult` class encapsulates the result of a random item
@@ -15,12 +17,12 @@
 /// print('Answer: ${result.answer}'); // Output: Apple
 /// print('Options: ${result.options}'); // Output: [Apple, Banana, Cherry, Date]
 /// ```
-class RandomPickResult<T> {
+class RandomPickResult {
   /// The correct answer from the randomly generated question.
-  final T answer;
+  final QuestionEntry answer;
 
   /// The list of options presented to the user, including the answer.
-  final List<T> options;
+  final List<QuestionEntry> options;
 
   /// Creates a `RandomPickResult` with the given [answer] and [options].
   ///

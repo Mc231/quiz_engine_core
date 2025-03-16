@@ -2,13 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:quiz_engine_core/quiz_engine_core.dart';
-import 'package:quiz_engine_core/src/model/question_entry.dart';
-import 'package:quiz_engine_core/src/model/question_type.dart';
 
 @GenerateNiceMocks([
   MockSpec<RandomItemPicker>(),
 ])
-import 'game_bloc_test.mocks.dart';
+import 'quiz_bloc_test.mocks.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

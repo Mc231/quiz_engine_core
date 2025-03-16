@@ -87,7 +87,7 @@ class QuizBloc extends SingleSubscriptionBloc<QuizState> {
   }
 
   /// Determines if the game is over based on the random picker result.
-  bool _isGameOver(RandomPickResult<QuestionEntry>? result) => result == null;
+  bool _isGameOver(RandomPickResult? result) => result == null;
 
   /// Notifies the game-over state and invokes the callback with the final result.
   void _notifyGameOver() {
