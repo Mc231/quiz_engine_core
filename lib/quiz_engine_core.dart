@@ -8,4 +8,6 @@ export 'src/business_logic/quiz_data_provider.dart';
 export 'src/bloc/bloc_provider.dart';
 export 'src/model/answer.dart';
 export 'src/model/question.dart';
+export 'src/model/question_entry.dart';
+export 'src/model/question_type.dart';
 export 'src/model/random_pick_result.dart';

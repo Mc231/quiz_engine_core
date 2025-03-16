@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:quiz_engine_core/src/model/question_entry.dart';
+
 import 'model/random_pick_result.dart';
 
 
@@ -20,15 +22,15 @@ import 'model/random_pick_result.dart';
 /// RandomPickResult result = itemPicker.pick();
 /// print('Answer: ${result.answer}, Options: ${result.options}');
 /// ```
-class RandomItemPicker<T> {
+class RandomItemPicker {
   /// The list of items from which random selections are made.
-  final List<T> items;
+  final List<QuestionEntry> items;
 
   /// The number of options to include in each pick.
   final int count;
 
   /// A list of items that have already been answered.
-  final List<T> _answeredItems = [];
+  final List<QuestionEntry> _answeredItems = [];
 
   /// The default number of options to pick if none is specified.
   static const _defaultCount = 4;
@@ -44,7 +46,7 @@ class RandomItemPicker<T> {
   /// This method clears the existing list of items and replaces it with
   /// the provided [items]. It is useful for resetting the item pool between
   /// rounds or sessions.
-  void replaceItems(List<T> newItems) {
+  void replaceItems(List<QuestionEntry> newItems) {
     items.clear();
     items.addAll(newItems);
     _answeredItems.clear();
@@ -57,7 +59,7 @@ class RandomItemPicker<T> {
   ///
   /// Returns a `RandomPickResult` containing the answer and options, or `null`
   /// if there are no items available for picking.
-  RandomPickResult<T>? pick() {
+  RandomPickResult<QuestionEntry>? pick() {
     if (items.isEmpty) {
       return null;
     }
@@ -90,7 +92,7 @@ class RandomItemPicker<T> {
   ///
   /// [answer] is the correct answer among the options.
   /// [options] is the list of options presented, including the answer.
-  RandomPickResult<T> _createResult(T answer, List<T> options) {
+  RandomPickResult<QuestionEntry> _createResult(QuestionEntry answer, List<QuestionEntry> options) {
     items.remove(answer);
     _answeredItems.add(answer);
     return RandomPickResult(answer, options);

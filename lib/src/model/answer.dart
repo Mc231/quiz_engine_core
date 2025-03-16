@@ -1,4 +1,5 @@
 import 'package:quiz_engine_core/src/model/question.dart';
+import 'package:quiz_engine_core/src/model/question_entry.dart';
 
 /// Represents an answer to a quiz question.
 ///
@@ -16,12 +17,12 @@ import 'package:quiz_engine_core/src/model/question.dart';
 /// Answer answer = Answer(selectedCountry, question);
 /// print('Is the answer correct? ${answer.isCorrect}'); // Output: Is the answer correct? true
 /// ```
-class Answer<T> {
+class Answer {
   /// The option selected by the user.
-  final T selectedOption;
+  final QuestionEntry selectedOption;
 
   /// The question for which the answer is provided.
-  final Question<T> question;
+  final Question question;
 
   /// Creates an `Answer<T>` with the given [selectedOption] and [question].
   ///

@@ -1,3 +1,4 @@
+import 'package:quiz_engine_core/src/model/question_entry.dart';
 import 'package:quiz_engine_core/src/model/random_pick_result.dart';
 
 /// Represents a question with an answer and multiple options.
@@ -11,12 +12,12 @@ import 'package:quiz_engine_core/src/model/random_pick_result.dart';
 /// This class is useful for applications involving quizzes, trivia games,
 /// or any interactive content requiring question-and-answer formats.
 ///
-class Question<T> {
+class Question {
   /// The correct answer to the question.
-  final T answer;
+  final QuestionEntry answer;
 
   /// The list of options available for the question.
-  final List<T> options;
+  final List<QuestionEntry> options;
 
   /// Creates a `Question` with the specified [answer] and [options].
   ///
@@ -33,6 +34,6 @@ class Question<T> {
   ///
   /// [result] is the `RandomPickResult` containing the answer and options
   /// for the question.
-  Question.fromRandomResult(RandomPickResult<T> result)
+  Question.fromRandomResult(RandomPickResult<QuestionEntry> result)
       : this(result.answer, result.options);
 }

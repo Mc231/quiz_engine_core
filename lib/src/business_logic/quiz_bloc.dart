@@ -1,61 +1,48 @@
 import 'package:quiz_engine_core/src/business_logic/quiz_state/quiz_state.dart';
+import 'package:quiz_engine_core/src/model/question_entry.dart';
 
 import '../bloc/single_subscription_bloc.dart';
 import '../model/answer.dart';
 import '../model/question.dart';
 import '../model/random_pick_result.dart';
 import '../random_item_picker.dart';
-import 'quiz_data_provider.dart';
 
 /// A business logic component (BLoC) that manages the state of a quiz game.
 ///
-/// The `GameBloc<T>` class is **fully generic**, supporting any type of quiz
-/// content (e.g., `Country`, `String`, `int`, etc.). It loads data, processes
-/// questions, evaluates answers, and tracks game progress.
-///
-/// This class **does not depend on any specific data type**.
-class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
-  /// The provider used to load quiz data.
-  final QuizDataProvider<T> provider;
+/// The `QuizBloc` class no longer depends on a specific `QuizDataProvider`.
+/// Instead, the user must provide a function that supplies quiz data.
+class QuizBloc extends SingleSubscriptionBloc<QuizState> {
+  /// Function to fetch quiz data.
+  ///
+  /// This function should return a `Future<List<QuestionEntry>>`.
+  final Future<List<QuestionEntry>> Function() dataProvider;
 
   /// The random item picker used to select random items for questions.
-  final RandomItemPicker<T> randomItemPicker;
+  final RandomItemPicker randomItemPicker;
 
   /// A filter function to apply when loading data (optional).
-  final bool Function(T)? filter;
+  final bool Function(QuestionEntry)? filter;
 
   /// Callback function to be invoked when the game is over.
-   Function(String result)? gameOverCallback;
+  Function(String result)? gameOverCallback;
 
   /// The list of quiz data items available for the game.
-  List<T> _items = [];
+  List<QuestionEntry> _items = [];
 
   /// The current progress indicating how many questions have been answered.
-  ///
   int _currentProgress = 0;
 
   /// The total number of questions in the game.
   int _totalCount = 0;
 
   /// The current question being asked to the player.
-  late Question<T> currentQuestion;
+  late Question currentQuestion;
 
   /// The list of answers provided by the player.
-  final List<Answer<T>> _answers = [];
+  final List<Answer> _answers = [];
 
-  /// Creates a `GameBloc` with the specified provider, item picker, and optional filter.
-  QuizBloc(this.provider, this.randomItemPicker, {this.filter});
-
-  /// Creates a standard `GameBloc` for any type with default settings.
-  factory QuizBloc.standard(
-      String jsonPath, T Function(Map<String, dynamic>) fromJson,
-      {bool Function(T)? filter}) {
-    return QuizBloc<T>(
-      QuizDataProvider<T>.standard(jsonPath, fromJson),
-      RandomItemPicker([]),
-      filter: filter,
-    );
-  }
+  /// Creates a `QuizBloc` with a provided data fetch function.
+  QuizBloc(this.dataProvider, this.randomItemPicker, {this.filter});
 
   /// The initial state of the game, set to loading.
   @override
@@ -63,10 +50,10 @@ class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
 
   /// Performs the initial data load when the screen is loaded.
   ///
-  /// This method retrieves quiz data from the provider, applies the optional filter,
-  /// and initializes the random picker.
-  void performInitialLoad() async {
-    var items = await provider.provide();
+  /// This method retrieves quiz data using the provided `dataProvider` function,
+  /// applies the optional filter, and initializes the random picker.
+  Future<void> performInitialLoad() async {
+    var items = await dataProvider();
 
     // Apply filter if provided, otherwise keep all items
     _items = filter != null ? items.where(filter!).toList() : items;
@@ -77,8 +64,8 @@ class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
   }
 
   /// Processes the player's answer to the current question.
-  void processAnswer(T selectedItem) {
-    var answer = Answer<T>(selectedItem, currentQuestion);
+  void processAnswer(QuestionEntry selectedItem) {
+    var answer = Answer(selectedItem, currentQuestion);
     _answers.add(answer);
     _currentProgress++;
     _pickQuestion();
@@ -88,12 +75,11 @@ class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
   void _pickQuestion() {
     var randomResult = randomItemPicker.pick();
     if (_isGameOver(randomResult)) {
-      var state =
-          QuizState.question(currentQuestion, _currentProgress, _totalCount);
+      var state = QuizState.question(currentQuestion, _currentProgress, _totalCount);
       dispatchState(state);
       _notifyGameOver();
     } else {
-      var question = Question<T>.fromRandomResult(randomResult!);
+      var question = Question.fromRandomResult(randomResult!);
       currentQuestion = question;
       var state = QuizState.question(question, _currentProgress, _totalCount);
       dispatchState(state);
@@ -101,7 +87,7 @@ class QuizBloc<T> extends SingleSubscriptionBloc<QuizState> {
   }
 
   /// Determines if the game is over based on the random picker result.
-  bool _isGameOver(RandomPickResult<T>? result) => result == null;
+  bool _isGameOver(RandomPickResult<QuestionEntry>? result) => result == null;
 
   /// Notifies the game-over state and invokes the callback with the final result.
   void _notifyGameOver() {

@@ -1,15 +1,12 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:quiz_engine_core/quiz_engine_core.dart';
-import 'package:quiz_engine_core/src/business_logic/quiz_data_provider.dart';
-import 'package:quiz_engine_core/src/model/random_pick_result.dart';
-import 'package:quiz_engine_core/src/random_item_picker.dart';
+import 'package:quiz_engine_core/src/model/question_entry.dart';
+import 'package:quiz_engine_core/src/model/question_type.dart';
 
 @GenerateNiceMocks([
-  MockSpec<QuizDataProvider<String>>(),
-  MockSpec<RandomItemPicker<String>>(),
+  MockSpec<RandomItemPicker>(),
 ])
 import 'game_bloc_test.mocks.dart';
 
@@ -17,54 +14,44 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late QuizBloc bloc;
-  late RandomItemPicker<String> randomItemPicker;
-  late QuizDataProvider<String> provider;
-  List<String> mockItems = ["A", "B", "C", "D", "E"];
+  late RandomItemPicker randomItemPicker;
+  late Future<List<QuestionEntry>> Function() mockDataProvider;
 
-  List<String> countries = [];
+  // Mock QuestionEntry objects with the correct QuestionType
+  List<QuestionEntry> mockItems = [
+    QuestionEntry(type: TextQuestion("What is the capital of France?"), otherOptions: {"difficulty": "easy"}),
+    QuestionEntry(type: TextQuestion("Solve: 2 + 2"), otherOptions: {"difficulty": "medium"}),
+    QuestionEntry(type: ImageQuestion("assets/images/flag.png"), otherOptions: {"hint": "Find the flag!"}),
+    QuestionEntry(type: TextQuestion("Who wrote Hamlet?"), otherOptions: {"difficulty": "hard"}),
+    QuestionEntry(type: ImageQuestion("assets/images/dog.png"), otherOptions: {"hint": "What animal is this?"}),
+  ];
 
   setUp(() {
     randomItemPicker = MockRandomItemPicker();
-    provider = MockQuizDataProvider();
 
-    // Mock asset loading: Replace 'assets/Countries.json' with fake data
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMessageHandler('flutter/assets', (message) async {
-      return Future.value(
-        ByteData.sublistView(Uint8List.fromList(
-          '[{"name": "1"}, {"name": "2"}, {"name": "3"}, {"name": "4"}, {"name": "5"}]'.codeUnits,
-        )),
-      );
-    });
+    // Mock data provider function
+    mockDataProvider = () async => mockItems;
 
-    bloc = QuizBloc<String>.standard(
-      'assets/Countries.json',
-          (json) => json.toString(),
-      filter: (country) => true,
-    );
-
-    countries = ["1", "2", "3", "4", "5"];
+    bloc = QuizBloc(mockDataProvider, randomItemPicker, filter: (entry) => true);
   });
 
   tearDown(() {
     bloc.dispose();
   });
 
-
   test('performInitialLoad() loads and filters data, updates picker, and picks a question', () async {
-    // Given: Mock provider returns mockItems
-    when(provider.provide()).thenAnswer((_) async => mockItems);
+    // Given: Mock item picker returns a valid question
+    when(randomItemPicker.pick()).thenReturn(RandomPickResult(mockItems.first, mockItems));
 
     // When
-    bloc.performInitialLoad();
+    await bloc.performInitialLoad();
+
+    // Then
+    expect(bloc.currentQuestion, isNotNull);
   });
 
   test('init standard', () {
-    final result = QuizBloc<String>.standard(
-      'assets/Countries.json',
-          (json) => json.toString(),
-      filter: (country) => true,
-    );
+    final result = QuizBloc(mockDataProvider, randomItemPicker, filter: (entry) => true);
     expect(result, isNotNull);
   });
 
@@ -73,29 +60,30 @@ void main() {
   });
 
   test('process answer', () async {
-    final question = Question<String>(countries.first, countries);
-    bloc.currentQuestion = question;
-    countries.removeLast();
-    final randomPickResult = RandomPickResult(countries.first, countries);
+    final question = QuestionEntry(type: TextQuestion("What is the capital of France?"), otherOptions: {"difficulty": "easy"});
+    bloc.currentQuestion = Question.fromRandomResult(RandomPickResult(question, mockItems));
 
-    when(randomItemPicker.pick()).thenReturn(randomPickResult);
+    // Mock the next random pick
+    when(randomItemPicker.pick()).thenReturn(RandomPickResult(mockItems[1], mockItems));
 
-    bloc.processAnswer(countries.first);
+    bloc.processAnswer(question);
 
     await expectLater(bloc.stream, emitsInOrder([isInstanceOf<QuestionState>()]));
   });
 
   test('process game over', () async {
-    final answer = countries.first;
-    final expectedScore = '0 / 0';
+    final expectedScore = '1 / 0';
 
-    bloc.currentQuestion = Question<String>(countries.last, countries);
     bloc.gameOverCallback = (score) {
       expect(score, equals(expectedScore));
     };
 
+    // Ensure a valid question is set before answering
+    bloc.currentQuestion = Question.fromRandomResult(RandomPickResult(mockItems.first, mockItems));
+
+    // Mock game over condition
     when(randomItemPicker.pick()).thenReturn(null);
 
-    bloc.processAnswer(answer);
+    bloc.processAnswer(mockItems.first);
   });
 }

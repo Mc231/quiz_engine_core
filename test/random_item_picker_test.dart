@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:quiz_engine_core/src/model/question_entry.dart';
+import 'package:quiz_engine_core/src/model/question_type.dart';
 import 'package:quiz_engine_core/src/random_item_picker.dart';
 
 void main() {
-  late RandomItemPicker<int> sut;
+  late RandomItemPicker sut;
 
   setUp(() {
     sut = RandomItemPicker([]);
@@ -11,7 +13,15 @@ void main() {
   group('RandomItemPicker Tests', () {
     test('replace items', () {
       // Given
-      final expectedItems = Iterable<int>.generate(10).toList();
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       expect(sut.items, isEmpty);
 
       // When
@@ -19,7 +29,7 @@ void main() {
 
       // Then
       expect(sut.items, equals(expectedItems));
-      expect(sut.items.length, equals(10));
+      expect(sut.items.length, equals(4));
     });
 
     test('empty items', () {
@@ -35,7 +45,15 @@ void main() {
 
     test('pick when count == items.length', () {
       // Given
-      final expectedItems = Iterable<int>.generate(4).toList();
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       expect(sut.items, isEmpty);
 
       // When
@@ -50,7 +68,13 @@ void main() {
 
     test('pick when items < count', () {
       // Given
-      final expectedItems = [1, 2]; // Only 2 items but count is 4 by default
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -63,7 +87,21 @@ void main() {
 
     test('pick random item', () {
       // Given
-      final expectedItems = Iterable<int>.generate(10).toList();
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("E"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("1"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("2"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("3"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("4"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("5"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -77,7 +115,16 @@ void main() {
 
     test('ensure picked items are added to answered list', () {
       // Given
-      final expectedItems = [1, 2, 3, 4, 5];
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("CA"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -90,7 +137,15 @@ void main() {
 
     test('pick all items until empty', () {
       // Given
-      final expectedItems = Iterable<int>.generate(4).toList();
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -106,7 +161,6 @@ void main() {
 
     test('pick when count > available items and answered items exist', () {
       // Given
-      sut.replaceItems([1, 2]);
       sut.pick(); // Pick first item
       sut.pick(); // Pick second item
 
@@ -119,7 +173,16 @@ void main() {
 
     test('ensure options list contains only unique values', () {
       // Given
-      final expectedItems = [1, 2, 3, 4, 5];
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("1"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -132,7 +195,16 @@ void main() {
 
     test('ensure answer is always part of options', () {
       // Given
-      final expectedItems = [1, 2, 3, 4, 5];
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C1"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
@@ -145,7 +217,16 @@ void main() {
 
     test('pick shuffles options', () {
       // Given
-      final expectedItems = [1, 2, 3, 4, 5];
+      final expectedItems = [
+        QuestionEntry(
+          type: QuestionType.text("A"),
+          otherOptions: {},
+        ),
+        QuestionEntry(type: QuestionType.text("B"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("B1"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("C"), otherOptions: {}),
+        QuestionEntry(type: QuestionType.text("D"), otherOptions: {}),
+      ];
       sut.replaceItems(expectedItems);
 
       // When
