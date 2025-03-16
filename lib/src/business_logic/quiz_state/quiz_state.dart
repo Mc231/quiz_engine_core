@@ -15,8 +15,7 @@ class LoadingState extends QuizState {}
 
 /// A state representing the question phase of the quiz.
 ///
-/// This class is **generic**, meaning it can handle any type of question (`T`).
-class QuestionState<T> extends QuizState {
+class QuestionState extends QuizState {
   /// The current question being presented to the player.
   final Question question;
 
@@ -29,6 +28,6 @@ class QuestionState<T> extends QuizState {
   /// Computes the percentage of progress made through the quiz.
   double get percentageProgress => total == 0 ? 0 : (progress / total).toDouble();
 
-  /// Creates a new `QuestionState<T>` with the given question, progress, and total.
+  /// Creates a new `QuestionState` with the given question, progress, and total.
   QuestionState(this.question, this.progress, this.total);
 }
